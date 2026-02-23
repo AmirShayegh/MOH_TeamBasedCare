@@ -23,7 +23,7 @@ import { Stepper, Button } from '@components';
 import { CareSettingsProvider, useCareSettingsContext } from './CareSettingsContext';
 import { SelectCompetencies } from './select-competencies';
 import { Finalize } from './finalize';
-import { SaveConfirmModal } from './save-confirm-modal';
+import { SaveNameModal } from './save-name-modal';
 import { useCareSettingTemplate } from 'src/services/useCareSettingTemplate';
 import { useCareSettingBundles } from 'src/services/useCareSettingBundles';
 import { useCareSettingOccupations } from 'src/services/useCareSettingOccupations';
@@ -163,8 +163,9 @@ const EditContent: React.FC = () => {
     setShowConfirmModal(true);
   };
 
-  const handleSaveConfirm = async () => {
+  const handleSaveConfirm = async (name: string) => {
     const updateData = {
+      name,
       selectedBundleIds: Array.from(state.selectedBundleIds),
       selectedActivityIds: Array.from(state.selectedActivityIds),
       permissions: getPermissionsArray(),
@@ -258,10 +259,10 @@ const EditContent: React.FC = () => {
       </div>
 
       {showConfirmModal && (
-        <SaveConfirmModal
+        <SaveNameModal
           isOpen={showConfirmModal}
           setIsOpen={setShowConfirmModal}
-          templateName={state.templateName}
+          currentName={state.templateName}
           onConfirm={handleSaveConfirm}
           isLoading={isUpdating}
         />
