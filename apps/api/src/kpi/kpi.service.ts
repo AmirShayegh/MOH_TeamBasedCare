@@ -79,10 +79,12 @@ export class KpiService {
       .select('cst.id', 'careSettingId')
       .addSelect('cst.name', 'careSettingName')
       .addSelect('cst.healthAuthority', 'healthAuthority')
+      .addSelect('cst.isMaster', 'isMaster')
       .addSelect('COUNT(ps.id)', 'count')
       .groupBy('cst.id')
       .addGroupBy('cst.name')
       .addGroupBy('cst.healthAuthority')
+      .addGroupBy('cst.isMaster')
       .orderBy('count', 'DESC');
 
     // Apply health authority filter (uses template's HA, not creator's org)
@@ -106,8 +108,8 @@ export class KpiService {
         new CarePlansBySettingRO({
           careSettingId: r.careSettingId,
           careSettingName: r.careSettingName,
-          healthAuthority:
-            r.healthAuthority === 'GLOBAL' ? 'Master' : r.healthAuthority || 'Unknown',
+          healthAuthority: r.healthAuthority || 'Unknown',
+          isMaster: r.isMaster,
           count: parseInt(r.count, 10),
         }),
     );
@@ -130,7 +132,8 @@ export class KpiService {
       .createQueryBuilder('cst')
       .select('cst.id', 'id')
       .addSelect('cst.name', 'displayName')
-      .addSelect('cst.healthAuthority', 'healthAuthority');
+      .addSelect('cst.healthAuthority', 'healthAuthority')
+      .addSelect('cst.isMaster', 'isMaster');
 
     // Content admins see their HA + GLOBAL templates; admins see all (healthAuthority = null)
     if (healthAuthority !== undefined && healthAuthority !== null) {
@@ -152,6 +155,7 @@ export class KpiService {
           id: r.id,
           displayName: r.displayName,
           healthAuthority: r.healthAuthority,
+          isMaster: r.isMaster,
         }),
     );
   }

@@ -37,10 +37,9 @@ const Dashboard: NextPage = () => {
     { value: '', label: 'All' },
     ...careSettings.map(cs => ({
       value: cs.id,
-      label:
-        cs.healthAuthority === 'GLOBAL'
-          ? `${cs.displayName} (Master)`
-          : `${cs.displayName} (${cs.healthAuthority})`,
+      label: cs.isMaster
+        ? `${cs.displayName} (Master)`
+        : `${cs.displayName} (${cs.healthAuthority})`,
     })),
   ];
 
@@ -124,6 +123,7 @@ const Dashboard: NextPage = () => {
                   key={`${setting.careSettingId}-${setting.healthAuthority}`}
                   careSettingName={setting.careSettingName}
                   healthAuthority={setting.healthAuthority}
+                  isMaster={setting.isMaster}
                   count={setting.count}
                 />
               ))}
