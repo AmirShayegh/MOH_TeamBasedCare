@@ -41,15 +41,10 @@ export class KpiService {
 
     const totalUsers = await totalUsersQuery.getCount();
 
-    // Active Users (logged in during current month)
-    const startOfMonth = new Date();
-    startOfMonth.setDate(1);
-    startOfMonth.setHours(0, 0, 0, 0);
-
+    // Active Users (all non-disabled)
     const activeUsersQuery = this.userRepo
       .createQueryBuilder('u')
-      .where('u.lastLoginAt >= :startOfMonth', { startOfMonth })
-      .andWhere('u.revokedAt IS NULL');
+      .where('u.revokedAt IS NULL');
 
     if (healthAuthority) {
       activeUsersQuery.andWhere('u.organization = :healthAuthority', { healthAuthority });

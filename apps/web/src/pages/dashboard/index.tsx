@@ -83,7 +83,7 @@ const Dashboard: NextPage = () => {
               <KPICard
                 title='Active Users'
                 value={overview?.general?.activeUsers ?? 0}
-                subtitle='Monitoring the current month user engagement.'
+                subtitle='Total number of non-disabled users in the system.'
                 icon={<UsersIcon />}
               />
               <KPICard
