@@ -1,3 +1,4 @@
+import { toast } from 'react-toastify';
 import { useHttp, useMe } from '@services';
 import { API_ENDPOINT } from 'src/common';
 import { Button } from './Button';
@@ -34,6 +35,7 @@ export const ExportButton = ({ sessionId }: ExportButtonProps) => {
       const xlsx = convertActivityGapTableToXLSX(data, user);
 
       triggerExcelDownload(xlsx, 'activity_gap_summary');
+      toast.success('Care plan exported successfully.');
     });
   };
   return (
