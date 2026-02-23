@@ -162,8 +162,8 @@ export class CareSettingTemplateService {
 
       queryBuilder.orderBy('t.isMaster', 'DESC').addOrderBy(orderBy, sortOrder as SortOrder);
     } else {
-      // Default: masters first, then by name
-      queryBuilder.orderBy('t.isMaster', 'DESC').addOrderBy('t.name', 'ASC');
+      // Default: masters first, then newest first
+      queryBuilder.orderBy('t.isMaster', 'DESC').addOrderBy('t.createdAt', 'DESC');
     }
 
     // Pagination
