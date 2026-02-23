@@ -73,14 +73,14 @@ export class KpiService {
   }
 
   async getCarePlansBySetting(filter: KPIFilterDTO): Promise<CarePlansBySettingRO[]> {
-    const queryBuilder = this.planningSessionRepo
-      .createQueryBuilder('ps')
-      .innerJoin('ps.careSettingTemplate', 'cst')
+    const queryBuilder = this.templateRepo
+      .createQueryBuilder('cst')
+      .leftJoin(PlanningSession, 'ps', 'ps.care_setting_template_id = cst.id')
       .select('cst.id', 'careSettingId')
       .addSelect('cst.name', 'careSettingName')
       .addSelect('cst.healthAuthority', 'healthAuthority')
       .addSelect('cst.isMaster', 'isMaster')
-      .addSelect('COUNT(ps.id)', 'count')
+      .addSelect('COALESCE(COUNT(ps.id), 0)', 'count')
       .groupBy('cst.id')
       .addGroupBy('cst.name')
       .addGroupBy('cst.healthAuthority')
