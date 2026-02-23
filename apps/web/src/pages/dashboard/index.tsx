@@ -45,7 +45,9 @@ const Dashboard: NextPage = () => {
       value: cs.id,
       label: cs.isMaster
         ? `${cs.displayName} (Master)`
-        : `${cs.displayName} (${cs.healthAuthority})`,
+        : cs.healthAuthority !== 'GLOBAL'
+          ? `${cs.displayName} (${cs.healthAuthority})`
+          : cs.displayName,
     })),
   ];
 

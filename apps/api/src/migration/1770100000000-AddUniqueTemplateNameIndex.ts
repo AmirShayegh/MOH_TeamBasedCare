@@ -4,12 +4,12 @@ export class AddUniqueTemplateNameIndex1770100000000 implements MigrationInterfa
   name = 'AddUniqueTemplateNameIndex1770100000000';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
-    // Step 1: Rename duplicate templates using unique id suffix to avoid collisions
+    // Step 1: Rename duplicate templates (same name + same HA) using unique id suffix
     await queryRunner.query(`
       UPDATE care_setting_template SET name = name || ' (dup-' || LEFT(sub.id::text, 8) || ')'
       FROM (
         SELECT id, ROW_NUMBER() OVER (
-          PARTITION BY LOWER(name), unit_id, health_authority
+          PARTITION BY LOWER(name), health_authority
           ORDER BY created_at ASC, id ASC
         ) AS rn
         FROM care_setting_template
@@ -17,20 +17,14 @@ export class AddUniqueTemplateNameIndex1770100000000 implements MigrationInterfa
       WHERE care_setting_template.id = sub.id AND sub.rn > 1
     `);
 
-    // Step 2: Safety backfill — ensure isMaster is true for GLOBAL templates
+    // Step 2: Create unique index on (lower(name), health_authority)
     await queryRunner.query(`
-      UPDATE care_setting_template SET is_master = true
-      WHERE health_authority = 'GLOBAL' AND is_master = false
-    `);
-
-    // Step 3: Create unique index on (lower(name), unit_id, health_authority)
-    await queryRunner.query(`
-      CREATE UNIQUE INDEX "idx_unique_template_name_unit_ha"
-      ON "care_setting_template" (LOWER(name), unit_id, health_authority)
+      CREATE UNIQUE INDEX "idx_unique_template_name_ha"
+      ON "care_setting_template" (LOWER(name), health_authority)
     `);
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(`DROP INDEX IF EXISTS "idx_unique_template_name_unit_ha"`);
+    await queryRunner.query(`DROP INDEX IF EXISTS "idx_unique_template_name_ha"`);
   }
 }

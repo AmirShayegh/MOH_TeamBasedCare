@@ -32,7 +32,7 @@ export const CarePlanCard: React.FC<CarePlanCardProps> = ({
       </div>
       {/* Health Authority */}
       <div className='text-xs font-bold text-bcBluePrimary leading-[18px]'>
-        {isMaster ? 'MASTER' : healthAuthority.toUpperCase()}
+        {isMaster ? 'MASTER' : healthAuthority !== 'GLOBAL' ? healthAuthority.toUpperCase() : ''}
       </div>
     </div>
   );
