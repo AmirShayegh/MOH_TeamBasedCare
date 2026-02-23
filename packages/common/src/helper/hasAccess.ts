@@ -5,6 +5,9 @@ export const hasAccess = (
   allowedRoles: Role[] = [],
   and = false,
 ): boolean => {
+  // Admin superuser: always has access to everything
+  if (userRoles.some(role => role === Role.ADMIN)) return true;
+
   const condition = (allowedRole: Role) => {
     return userRoles.some(userRole => userRole === allowedRole);
   };
