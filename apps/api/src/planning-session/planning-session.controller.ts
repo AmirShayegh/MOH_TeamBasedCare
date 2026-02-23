@@ -124,6 +124,13 @@ export class PlanningSessionController {
     return this.planningSessionService.getPlanningActivityGap(sessionId);
   }
 
+  @UseGuards(SessionGuard)
+  @Patch('/:sessionId/export')
+  async markSessionExported(@Param('sessionId') sessionId: string) {
+    await this.planningSessionService.markSessionExported(sessionId);
+    return SUCCESS_RESPONSE;
+  }
+
   /**
    * Get occupation suggestions for a planning session.
    * Auth: class-level @AllowRoles(Role.USER) + SessionGuard (session ownership).

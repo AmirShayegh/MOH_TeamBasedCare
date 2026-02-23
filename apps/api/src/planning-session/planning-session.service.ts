@@ -48,6 +48,13 @@ export class PlanningSessionService {
     return planningSession;
   }
 
+  async markSessionExported(sessionId: string): Promise<void> {
+    await this.planningSessionRepo.update(
+      { id: sessionId, status: PlanningStatus.DRAFT },
+      { status: PlanningStatus.EXPORTED },
+    );
+  }
+
   // find latest Draft planning sessions
   async getLastDraftPlanningSession(user: User) {
     const planningSession = await this.planningSessionRepo.findOne({
