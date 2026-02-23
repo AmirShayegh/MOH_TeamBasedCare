@@ -59,7 +59,7 @@ export const sidebarNavItems: SidebarButtonProps[] = [
     icon: <OccupationalScopeIcon />,
     path: AllowedPath.OCCUPATIONAL_SCOPE,
     hidden: false,
-    roles: [Role.USER],
+    roles: [Role.USER, Role.CONTENT_ADMIN],
   },
   {
     id: '007',
