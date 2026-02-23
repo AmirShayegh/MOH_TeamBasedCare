@@ -1,4 +1,4 @@
-import { Role } from 'src/constants';
+import { Role } from '../constants';
 
 export const hasAccess = (
   userRoles: Role[] = [],
