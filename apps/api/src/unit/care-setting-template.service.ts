@@ -94,8 +94,9 @@ export class CareSettingTemplateService {
   ): Promise<void> {
     const queryBuilder = this.templateRepo
       .createQueryBuilder('t')
+      .innerJoin('t.unit', 'u')
       .where('LOWER(t.name) = LOWER(:name)', { name: name.trim() })
-      .andWhere('t.unit.id = :unitId', { unitId })
+      .andWhere('u.id = :unitId', { unitId })
       .andWhere('t.healthAuthority = :healthAuthority', { healthAuthority });
 
     if (excludeId) {
