@@ -76,7 +76,11 @@ export class OccupationService {
       sortOrder = reverseSortOrder(query.sortOrder as SortOrder);
     }
 
-    if (query.sortBy) queryBuilder.orderBy(`o.${query.sortBy}`, sortOrder as SortOrder); // add sort if requested, else default sort order applies as mentioned in the entity [displayOrder]
+    if (query.sortBy) {
+      queryBuilder.orderBy(`o.${query.sortBy}`, sortOrder as SortOrder);
+    } else {
+      queryBuilder.orderBy('o.displayName', 'ASC').addOrderBy('o.id', 'ASC');
+    }
 
     // return the paginated response
     return queryBuilder
