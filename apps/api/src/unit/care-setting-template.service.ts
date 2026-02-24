@@ -92,10 +92,15 @@ export class CareSettingTemplateService {
   ): Promise<void> {
     const queryBuilder = this.templateRepo
       .createQueryBuilder('t')
-      .where('LOWER(t.name) = LOWER(:name)', { name: name.trim() })
-      .andWhere('t.healthAuthority IN (:...authorities)', {
-        authorities: healthAuthority === 'GLOBAL' ? ['GLOBAL'] : [healthAuthority, 'GLOBAL'],
+      .where('LOWER(t.name) = LOWER(:name)', { name: name.trim() });
+
+    // GLOBAL templates are visible to all HAs, so check against every template.
+    // HA-scoped templates only need to check their own HA + GLOBAL.
+    if (healthAuthority !== 'GLOBAL') {
+      queryBuilder.andWhere('t.healthAuthority IN (:...authorities)', {
+        authorities: [healthAuthority, 'GLOBAL'],
       });
+    }
 
     if (excludeId) {
       queryBuilder.andWhere('t.id != :excludeId', { excludeId });
