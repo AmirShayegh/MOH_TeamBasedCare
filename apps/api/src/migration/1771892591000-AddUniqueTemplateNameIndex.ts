@@ -1,12 +1,12 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class AddUniqueTemplateNameIndex1770100000000 implements MigrationInterface {
-  name = 'AddUniqueTemplateNameIndex1770100000000';
+export class AddUniqueTemplateNameIndex1771892591000 implements MigrationInterface {
+  name = 'AddUniqueTemplateNameIndex1771892591000';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     // Step 1: Rename duplicate templates (same name + same HA) using unique id suffix
     await queryRunner.query(`
-      UPDATE care_setting_template SET name = name || ' (dup-' || LEFT(sub.id::text, 8) || ')'
+      UPDATE care_setting_template SET name = name || ' (duplicate-' || LEFT(sub.id::text, 8) || ')'
       FROM (
         SELECT id, ROW_NUMBER() OVER (
           PARTITION BY LOWER(name), health_authority

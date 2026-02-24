@@ -606,8 +606,10 @@ export class PlanningSessionService {
       const aCoverage = a.activitiesY.size + a.activitiesLC.size;
       const bCoverage = b.activitiesY.size + b.activitiesLC.size;
       if (bCoverage !== aCoverage) return bCoverage - aCoverage;
-      return a.occupationName.localeCompare(b.occupationName)
-        || a.occupationId.localeCompare(b.occupationId);
+      return (
+        a.occupationName.localeCompare(b.occupationName) ||
+        a.occupationId.localeCompare(b.occupationId)
+      );
     });
 
     const total = occupationScores.length;
