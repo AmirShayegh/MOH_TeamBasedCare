@@ -53,12 +53,9 @@ export class OccupationService {
 
     // Search logic below
     if (query.searchText) {
-      queryBuilder
-        .innerJoin('o.allowedActivities', 'o_aa') // join allowed activities
-        .innerJoin('o_aa.careActivity', 'o_aa_ca') // add relation care activity
-        .where('o_aa_ca.displayName ILIKE :name', { name: `%${query.searchText}%` }) // care activity name matching
-        .orWhere('o.displayName ILIKE :name', { name: `%${query.searchText}%` }) // occupation display name matching
-        .orWhere('o.description ILIKE :name', { name: `%${query.searchText}%` }); // occupation description matching
+      queryBuilder.where('(o.displayName ILIKE :search OR o.description ILIKE :search)', {
+        search: `%${query.searchText}%`,
+      });
     }
 
     // Sort logic below
