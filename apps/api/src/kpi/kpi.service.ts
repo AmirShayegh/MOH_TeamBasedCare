@@ -32,11 +32,11 @@ export class KpiService {
   }
 
   async getGeneralKPIs(healthAuthority?: string): Promise<GeneralKPIsRO> {
-    // Total Users (non-revoked)
-    const totalUsersQuery = this.userRepo.createQueryBuilder('u').where('u.revokedAt IS NULL');
+    // Total Users (all users including revoked)
+    const totalUsersQuery = this.userRepo.createQueryBuilder('u');
 
     if (healthAuthority) {
-      totalUsersQuery.andWhere('u.organization = :healthAuthority', { healthAuthority });
+      totalUsersQuery.where('u.organization = :healthAuthority', { healthAuthority });
     }
 
     const totalUsers = await totalUsersQuery.getCount();
