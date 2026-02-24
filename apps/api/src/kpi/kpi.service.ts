@@ -41,15 +41,8 @@ export class KpiService {
 
     const totalUsers = await totalUsersQuery.getCount();
 
-    // Active Users (logged in during current month)
-    const startOfMonth = new Date();
-    startOfMonth.setDate(1);
-    startOfMonth.setHours(0, 0, 0, 0);
-
-    const activeUsersQuery = this.userRepo
-      .createQueryBuilder('u')
-      .where('u.lastLoginAt >= :startOfMonth', { startOfMonth })
-      .andWhere('u.revokedAt IS NULL');
+    // Active Users (all non-disabled)
+    const activeUsersQuery = this.userRepo.createQueryBuilder('u').where('u.revokedAt IS NULL');
 
     if (healthAuthority) {
       activeUsersQuery.andWhere('u.organization = :healthAuthority', { healthAuthority });
@@ -78,16 +71,18 @@ export class KpiService {
   }
 
   async getCarePlansBySetting(filter: KPIFilterDTO): Promise<CarePlansBySettingRO[]> {
-    const queryBuilder = this.planningSessionRepo
-      .createQueryBuilder('ps')
-      .innerJoin('ps.careSettingTemplate', 'cst')
+    const queryBuilder = this.templateRepo
+      .createQueryBuilder('cst')
+      .leftJoin(PlanningSession, 'ps', 'ps.care_setting_template_id = cst.id')
       .select('cst.id', 'careSettingId')
       .addSelect('cst.name', 'careSettingName')
       .addSelect('cst.healthAuthority', 'healthAuthority')
-      .addSelect('COUNT(ps.id)', 'count')
+      .addSelect('cst.isMaster', 'isMaster')
+      .addSelect('COALESCE(COUNT(ps.id), 0)', 'count')
       .groupBy('cst.id')
       .addGroupBy('cst.name')
       .addGroupBy('cst.healthAuthority')
+      .addGroupBy('cst.isMaster')
       .orderBy('count', 'DESC');
 
     // Apply health authority filter (uses template's HA, not creator's org)
@@ -111,8 +106,8 @@ export class KpiService {
         new CarePlansBySettingRO({
           careSettingId: r.careSettingId,
           careSettingName: r.careSettingName,
-          healthAuthority:
-            r.healthAuthority === 'GLOBAL' ? 'Master' : r.healthAuthority || 'Unknown',
+          healthAuthority: r.healthAuthority || 'Unknown',
+          isMaster: r.isMaster,
           count: parseInt(r.count, 10),
         }),
     );
@@ -135,7 +130,8 @@ export class KpiService {
       .createQueryBuilder('cst')
       .select('cst.id', 'id')
       .addSelect('cst.name', 'displayName')
-      .addSelect('cst.healthAuthority', 'healthAuthority');
+      .addSelect('cst.healthAuthority', 'healthAuthority')
+      .addSelect('cst.isMaster', 'isMaster');
 
     // Content admins see their HA + GLOBAL templates; admins see all (healthAuthority = null)
     if (healthAuthority !== undefined && healthAuthority !== null) {
@@ -157,6 +153,7 @@ export class KpiService {
           id: r.id,
           displayName: r.displayName,
           healthAuthority: r.healthAuthority,
+          isMaster: r.isMaster,
         }),
     );
   }

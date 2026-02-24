@@ -17,6 +17,9 @@ export const useMe = () => {
     (roles: Role[]) => {
       if (!Array.isArray(roles) || !Array.isArray(me?.roles)) return false;
 
+      // Admin superuser: always has access to everything
+      if (me?.roles.some(role => role === Role.ADMIN)) return true;
+
       return me?.roles.some(role => roles.includes(role));
     },
     [me],

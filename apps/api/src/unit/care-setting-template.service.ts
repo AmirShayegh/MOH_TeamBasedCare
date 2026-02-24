@@ -78,24 +78,21 @@ export class CareSettingTemplateService {
   }
 
   /**
-   * Check if a template name already exists within a unit for a health authority
-   * Names must be unique within the combination of unit + health authority
+   * Check if a template name already exists for a health authority.
+   * Names must be unique within a health authority (regardless of unit).
    * @param name - The name to check
-   * @param unitId - The unit to check within
    * @param healthAuthority - The health authority to scope the check
    * @param excludeId - Optional template ID to exclude (for updates)
    * @throws BadRequestException if a duplicate name exists
    */
   private async checkDuplicateName(
     name: string,
-    unitId: string,
     healthAuthority: string,
     excludeId?: string,
   ): Promise<void> {
     const queryBuilder = this.templateRepo
       .createQueryBuilder('t')
       .where('LOWER(t.name) = LOWER(:name)', { name: name.trim() })
-      .andWhere('t.unit.id = :unitId', { unitId })
       .andWhere('t.healthAuthority = :healthAuthority', { healthAuthority });
 
     if (excludeId) {
@@ -162,8 +159,8 @@ export class CareSettingTemplateService {
 
       queryBuilder.orderBy('t.isMaster', 'DESC').addOrderBy(orderBy, sortOrder as SortOrder);
     } else {
-      // Default: masters first, then by name
-      queryBuilder.orderBy('t.isMaster', 'DESC').addOrderBy('t.name', 'ASC');
+      // Default: masters first, then newest first
+      queryBuilder.orderBy('t.isMaster', 'DESC').addOrderBy('t.createdAt', 'DESC');
     }
 
     // Pagination
@@ -430,7 +427,7 @@ export class CareSettingTemplateService {
     }
 
     // Check for duplicate name before creating copy (scoped to HA)
-    await this.checkDuplicateName(dto.name, source.unit.id, healthAuthority);
+    await this.checkDuplicateName(dto.name, healthAuthority);
 
     // Create new template (createdBy/updatedBy auto-set by AuditSubscriber)
     const newTemplate = this.templateRepo.create({
@@ -493,7 +490,7 @@ export class CareSettingTemplateService {
     }
 
     // Check for duplicate name (scoped to HA)
-    await this.checkDuplicateName(dto.name, source.unit.id, healthAuthority);
+    await this.checkDuplicateName(dto.name, healthAuthority);
 
     // Get selected bundles
     const selectedBundles = await this.bundleRepo.find({
@@ -588,7 +585,7 @@ export class CareSettingTemplateService {
 
     // Update name if provided, checking for duplicates (scoped to same HA)
     if (dto.name && dto.name !== template.name) {
-      await this.checkDuplicateName(dto.name, template.unit.id, template.healthAuthority, id);
+      await this.checkDuplicateName(dto.name, template.healthAuthority, id);
       template.name = dto.name;
     }
 

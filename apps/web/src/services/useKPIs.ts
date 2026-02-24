@@ -32,7 +32,7 @@ export const useKPIs = () => {
   );
 
   const setHealthAuthorityFilter = useCallback((value: string) => {
-    setFilters(prev => ({ ...prev, healthAuthority: value }));
+    setFilters(prev => ({ ...prev, healthAuthority: value, careSettingId: '' }));
   }, []);
 
   const setCareSettingFilter = useCallback((value: string) => {

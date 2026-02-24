@@ -32,15 +32,22 @@ const Dashboard: NextPage = () => {
     })),
   ];
 
-  // Build care setting options from API (templates with HA context)
+  // Build care setting options filtered by selected HA
+  const filteredCareSettings = filters.healthAuthority
+    ? careSettings.filter(
+        cs => cs.healthAuthority === filters.healthAuthority || cs.healthAuthority === 'GLOBAL',
+      )
+    : careSettings;
+
   const careSettingOptions: HeadlessListOptions<string>[] = [
     { value: '', label: 'All' },
-    ...careSettings.map(cs => ({
+    ...filteredCareSettings.map(cs => ({
       value: cs.id,
-      label:
-        cs.healthAuthority === 'GLOBAL'
-          ? `${cs.displayName} (Master)`
-          : `${cs.displayName} (${cs.healthAuthority})`,
+      label: cs.isMaster
+        ? `${cs.displayName} (Master)`
+        : cs.healthAuthority !== 'GLOBAL'
+          ? `${cs.displayName} (${cs.healthAuthority})`
+          : cs.displayName,
     })),
   ];
 
@@ -83,7 +90,7 @@ const Dashboard: NextPage = () => {
               <KPICard
                 title='Active Users'
                 value={overview?.general?.activeUsers ?? 0}
-                subtitle='Monitoring the current month user engagement.'
+                subtitle='Total number of non-disabled users in the system.'
                 icon={<UsersIcon />}
               />
               <KPICard
@@ -124,6 +131,7 @@ const Dashboard: NextPage = () => {
                   key={`${setting.careSettingId}-${setting.healthAuthority}`}
                   careSettingName={setting.careSettingName}
                   healthAuthority={setting.healthAuthority}
+                  isMaster={setting.isMaster}
                   count={setting.count}
                 />
               ))}

@@ -44,6 +44,7 @@ export class OccupationController {
   }
 
   @Get('find')
+  @AllowRoles({ roles: [Role.USER, Role.CONTENT_ADMIN] })
   async findOccupations(@Query() query: FindOccupationsDto): Promise<PaginationRO<OccupationRO[]>> {
     const [occupations, total] = await this.occupationService.findOccupations(query);
     return new PaginationRO([occupations.map(occupation => new OccupationRO(occupation)), total]);

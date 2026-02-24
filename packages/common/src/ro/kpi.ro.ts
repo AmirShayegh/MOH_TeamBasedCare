@@ -28,6 +28,9 @@ export class CarePlansBySettingRO {
   healthAuthority!: string;
 
   @Expose()
+  isMaster!: boolean;
+
+  @Expose()
   count!: number;
 
   constructor(data: Partial<CarePlansBySettingRO>) {
@@ -45,6 +48,9 @@ export class KPICareSettingRO {
 
   @Expose()
   healthAuthority!: string;
+
+  @Expose()
+  isMaster!: boolean;
 
   constructor(data: Partial<KPICareSettingRO>) {
     Object.assign(this, data);

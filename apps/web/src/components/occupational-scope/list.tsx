@@ -145,7 +145,7 @@ export const OccupationalScopeList: React.FC<OccupationalScopeListProps> = ({
 
   return (
     <div className='max-h-full w-full flex-1 flex flex-col overflow-auto gap-3 p-4 bg-white'>
-      <div> Showing {total} members. </div>
+      <div> Showing {total} occupations. </div>
       <table className='table-auto'>
         <TableHeader sortKey={sortKey} sortOrder={sortOrder} onSortChange={onSortChange} />
         <TableBody occupations={occupations} />

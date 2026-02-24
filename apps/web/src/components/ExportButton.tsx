@@ -1,5 +1,6 @@
+import { toast } from 'react-toastify';
 import { useHttp, useMe } from '@services';
-import { API_ENDPOINT } from 'src/common';
+import { API_ENDPOINT, REQUEST_METHOD } from 'src/common';
 import { Button } from './Button';
 import {
   ActivityGap,
@@ -22,7 +23,7 @@ interface ExportButtonProps {
 }
 
 export const ExportButton = ({ sessionId }: ExportButtonProps) => {
-  const { fetchData } = useHttp();
+  const { fetchData, sendApiRequest } = useHttp();
   const { me: user } = useMe();
 
   const exportToXlsx = () => {
@@ -34,6 +35,14 @@ export const ExportButton = ({ sessionId }: ExportButtonProps) => {
       const xlsx = convertActivityGapTableToXLSX(data, user);
 
       triggerExcelDownload(xlsx, 'activity_gap_summary');
+      toast.success('Care plan exported successfully.');
+
+      // Mark session as exported so it no longer appears as an incomplete draft
+      sendApiRequest(
+        { endpoint: API_ENDPOINT.markSessionExported(sessionId), method: REQUEST_METHOD.PATCH },
+        () => void 0,
+        () => void 0,
+      );
     });
   };
   return (
