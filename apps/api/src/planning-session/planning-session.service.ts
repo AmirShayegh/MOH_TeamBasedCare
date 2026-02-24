@@ -600,10 +600,14 @@ export class PlanningSessionService {
       }
     });
 
-    // 8. Sort by score DESC, then displayName ASC
+    // 8. Sort by score DESC, then coverage breadth DESC, then name ASC
     occupationScores.sort((a, b) => {
       if (b.score !== a.score) return b.score - a.score;
-      return a.occupationName.localeCompare(b.occupationName);
+      const aCoverage = a.activitiesY.size + a.activitiesLC.size;
+      const bCoverage = b.activitiesY.size + b.activitiesLC.size;
+      if (bCoverage !== aCoverage) return bCoverage - aCoverage;
+      return a.occupationName.localeCompare(b.occupationName)
+        || a.occupationId.localeCompare(b.occupationId);
     });
 
     const total = occupationScores.length;

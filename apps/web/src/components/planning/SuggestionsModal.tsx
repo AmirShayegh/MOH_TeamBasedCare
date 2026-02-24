@@ -213,7 +213,7 @@ export const SuggestionsModal: React.FC<SuggestionsModalProps> = ({ isOpen, onCl
         // Success: All activities covered by selected team
         return (
           <div className='flex items-center justify-center py-12 text-gray-500'>
-            <FontAwesomeIcon icon={faCheck} className='mr-2 text-green-500' />
+            <FontAwesomeIcon icon={faCheck} className='mr-2 text-green-500 text-xl' />
             All activities are covered by selected occupations
           </div>
         );
