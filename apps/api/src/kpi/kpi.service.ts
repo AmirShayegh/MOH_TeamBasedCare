@@ -50,14 +50,15 @@ export class KpiService {
 
     const activeUsers = await activeUsersQuery.getCount();
 
-    // Total Care Plans created by users in the specified HA
+    // Total Care Plans — when filtering by HA, count plans created by users in that HA
     const carePlansQuery = this.planningSessionRepo
       .createQueryBuilder('ps')
-      .innerJoin('ps.careSettingTemplate', 'cst')
-      .innerJoin('ps.createdBy', 'creator');
+      .innerJoin('ps.careSettingTemplate', 'cst');
 
     if (healthAuthority) {
-      carePlansQuery.where('creator.organization = :healthAuthority', { healthAuthority });
+      carePlansQuery
+        .innerJoin('ps.createdBy', 'creator')
+        .where('creator.organization = :healthAuthority', { healthAuthority });
     }
 
     const totalCarePlans = await carePlansQuery.getCount();
