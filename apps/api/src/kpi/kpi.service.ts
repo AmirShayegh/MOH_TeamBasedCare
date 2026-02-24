@@ -50,15 +50,14 @@ export class KpiService {
 
     const activeUsers = await activeUsersQuery.getCount();
 
-    // Total Care Plans (always join template for consistency with per-template cards)
+    // Total Care Plans created by users in the specified HA
     const carePlansQuery = this.planningSessionRepo
       .createQueryBuilder('ps')
-      .innerJoin('ps.careSettingTemplate', 'cst');
+      .innerJoin('ps.careSettingTemplate', 'cst')
+      .innerJoin('ps.createdBy', 'creator');
 
     if (healthAuthority) {
-      carePlansQuery.where('cst.healthAuthority IN (:...authorities)', {
-        authorities: [healthAuthority, 'GLOBAL'],
-      });
+      carePlansQuery.where('creator.organization = :healthAuthority', { healthAuthority });
     }
 
     const totalCarePlans = await carePlansQuery.getCount();
