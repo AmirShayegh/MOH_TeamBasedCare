@@ -32,11 +32,11 @@ export class KpiService {
   }
 
   async getGeneralKPIs(healthAuthority?: string): Promise<GeneralKPIsRO> {
-    // Total Users (non-revoked)
-    const totalUsersQuery = this.userRepo.createQueryBuilder('u').where('u.revokedAt IS NULL');
+    // Total Users (all users including revoked)
+    const totalUsersQuery = this.userRepo.createQueryBuilder('u');
 
     if (healthAuthority) {
-      totalUsersQuery.andWhere('u.organization = :healthAuthority', { healthAuthority });
+      totalUsersQuery.where('u.organization = :healthAuthority', { healthAuthority });
     }
 
     const totalUsers = await totalUsersQuery.getCount();
@@ -50,15 +50,15 @@ export class KpiService {
 
     const activeUsers = await activeUsersQuery.getCount();
 
-    // Total Care Plans (always join template for consistency with per-template cards)
+    // Total Care Plans — when filtering by HA, count plans created by users in that HA
     const carePlansQuery = this.planningSessionRepo
       .createQueryBuilder('ps')
       .innerJoin('ps.careSettingTemplate', 'cst');
 
     if (healthAuthority) {
-      carePlansQuery.where('cst.healthAuthority IN (:...authorities)', {
-        authorities: [healthAuthority, 'GLOBAL'],
-      });
+      carePlansQuery
+        .innerJoin('ps.createdBy', 'creator')
+        .where('creator.organization = :healthAuthority', { healthAuthority });
     }
 
     const totalCarePlans = await carePlansQuery.getCount();
