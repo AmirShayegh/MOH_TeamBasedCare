@@ -94,8 +94,7 @@ export class CareSettingTemplateService {
       .createQueryBuilder('t')
       .where('LOWER(t.name) = LOWER(:name)', { name: name.trim() })
       .andWhere('t.healthAuthority IN (:...authorities)', {
-        authorities:
-          healthAuthority === 'GLOBAL' ? ['GLOBAL'] : [healthAuthority, 'GLOBAL'],
+        authorities: healthAuthority === 'GLOBAL' ? ['GLOBAL'] : [healthAuthority, 'GLOBAL'],
       });
 
     if (excludeId) {
