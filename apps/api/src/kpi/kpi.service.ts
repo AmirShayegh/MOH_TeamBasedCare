@@ -41,14 +41,17 @@ export class KpiService {
 
     const totalUsers = await totalUsersQuery.getCount();
 
-    // Active Users (all non-disabled)
-    const activeUsersQuery = this.userRepo.createQueryBuilder('u').where('u.revokedAt IS NULL');
+    // Pending Users (invited but not yet logged in)
+    const pendingUsersQuery = this.userRepo
+      .createQueryBuilder('u')
+      .where('u.keycloakId IS NULL')
+      .andWhere('u.revokedAt IS NULL');
 
     if (healthAuthority) {
-      activeUsersQuery.andWhere('u.organization = :healthAuthority', { healthAuthority });
+      pendingUsersQuery.andWhere('u.organization = :healthAuthority', { healthAuthority });
     }
 
-    const activeUsers = await activeUsersQuery.getCount();
+    const pendingUsers = await pendingUsersQuery.getCount();
 
     // Total Care Plans — when filtering by HA, count plans created by users in that HA
     const carePlansQuery = this.planningSessionRepo
@@ -65,7 +68,7 @@ export class KpiService {
 
     return new GeneralKPIsRO({
       totalUsers,
-      activeUsers,
+      pendingUsers,
       totalCarePlans,
     });
   }

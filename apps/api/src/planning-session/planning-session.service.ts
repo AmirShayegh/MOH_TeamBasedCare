@@ -48,10 +48,10 @@ export class PlanningSessionService {
     return planningSession;
   }
 
-  async markSessionExported(sessionId: string): Promise<void> {
+  async markSessionPublished(sessionId: string): Promise<void> {
     await this.planningSessionRepo.update(
       { id: sessionId, status: PlanningStatus.DRAFT },
-      { status: PlanningStatus.EXPORTED },
+      { status: PlanningStatus.PUBLISHED },
     );
   }
 
@@ -73,8 +73,20 @@ export class PlanningSessionService {
     return planningSession;
   }
 
-  // create a new planning session
-  async createPlanningSession(saveProfileDto: SaveProfileDTO): Promise<PlanningSession> {
+  // create a new planning session (only 1 draft allowed per user)
+  async createPlanningSession(
+    saveProfileDto: SaveProfileDTO,
+    user: User,
+  ): Promise<PlanningSession> {
+    // Delete any existing draft sessions for this user
+    // Use find + remove (not delete) so TypeORM cleans up M-M junction tables
+    const existingDrafts = await this.planningSessionRepo.find({
+      where: { status: PlanningStatus.DRAFT, createdBy: { id: user.id } },
+    });
+    if (existingDrafts.length > 0) {
+      await this.planningSessionRepo.remove(existingDrafts);
+    }
+
     const template = await this.careSettingTemplateService.getTemplateForPlanning(
       saveProfileDto.careLocation, // Frontend sends template UUID in this field
     );
@@ -89,8 +101,6 @@ export class PlanningSessionService {
     const planningSession = this.planningSessionRepo.create(session);
 
     await this.planningSessionRepo.save(planningSession);
-
-    const user = planningSession.createdBy;
 
     //Save preference for user to not show confirmation popup
     if (saveProfileDto.userPrefNotShowConfirmDraftRemoval) {

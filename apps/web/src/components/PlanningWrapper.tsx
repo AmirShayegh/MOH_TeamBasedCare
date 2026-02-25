@@ -4,6 +4,7 @@ import { PlanningSteps } from '../common/constants';
 import { PlanningProvider } from './planning/PlanningContext';
 import { usePlanningContext } from '../services';
 import { ExportButton } from './ExportButton';
+import { PublishButton } from './PublishButton';
 
 const WrapperContent = () => {
   const {
@@ -48,7 +49,10 @@ const WrapperContent = () => {
           </Button>
 
           {currentStep >= PlanningSteps.length ? (
-            <ExportButton sessionId={sessionId}></ExportButton>
+            <>
+              <ExportButton sessionId={sessionId} />
+              <PublishButton sessionId={sessionId} />
+            </>
           ) : (
             <Button
               variant='primary'

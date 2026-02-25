@@ -43,9 +43,8 @@ const Dashboard: NextPage = () => {
     { value: '', label: 'All' },
     ...filteredCareSettings.map(cs => ({
       value: cs.id,
-      label: cs.isMaster
-        ? `${cs.displayName} (Master)`
-        : cs.healthAuthority !== 'GLOBAL'
+      label:
+        cs.healthAuthority !== 'GLOBAL'
           ? `${cs.displayName} (${cs.healthAuthority})`
           : cs.displayName,
     })),
@@ -88,9 +87,9 @@ const Dashboard: NextPage = () => {
                 icon={<UsersIcon />}
               />
               <KPICard
-                title='Active Users'
-                value={overview?.general?.activeUsers ?? 0}
-                subtitle='Total number of non-disabled users in the system.'
+                title='Pending Users'
+                value={overview?.general?.pendingUsers ?? 0}
+                subtitle={"Users who have been invited but haven't logged in yet."}
                 icon={<UsersIcon />}
               />
               <KPICard
@@ -131,7 +130,6 @@ const Dashboard: NextPage = () => {
                   key={`${setting.careSettingId}-${setting.healthAuthority}`}
                   careSettingName={setting.careSettingName}
                   healthAuthority={setting.healthAuthority}
-                  isMaster={setting.isMaster}
                   count={setting.count}
                 />
               ))}

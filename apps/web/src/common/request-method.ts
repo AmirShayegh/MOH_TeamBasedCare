@@ -68,7 +68,7 @@ export const API_ENDPOINT = {
   getPlanningOccupation: (sessionId: string) => `/sessions/${sessionId}/occupation`,
   getPlanningCareActivity: (sessionId: string) => `/sessions/${sessionId}/care-activity`,
   getPlanningActivityGap: (sessionId: string) => `/sessions/${sessionId}/activities-gap`,
-  markSessionExported: (sessionId: string) => `/sessions/${sessionId}/export`,
+  markSessionPublished: (sessionId: string) => `/sessions/${sessionId}/publish`,
   getSuggestions: (sessionId: string) => `/sessions/${sessionId}/suggestions`,
   getActivitiesAllowedByOccupation: (
     occupationId: string,

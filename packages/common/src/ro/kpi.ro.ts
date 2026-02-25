@@ -6,7 +6,7 @@ export class GeneralKPIsRO {
   totalUsers!: number;
 
   @Expose()
-  activeUsers!: number;
+  pendingUsers!: number;
 
   @Expose()
   totalCarePlans!: number;

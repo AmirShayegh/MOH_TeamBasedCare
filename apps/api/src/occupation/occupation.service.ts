@@ -51,9 +51,9 @@ export class OccupationService {
   async findOccupations(query: FindOccupationsDto): Promise<[Occupation[], number]> {
     const queryBuilder = this.occupationRepository.createQueryBuilder('o');
 
-    // Search logic below
+    // Search by name only
     if (query.searchText) {
-      queryBuilder.where('(o.displayName ILIKE :search OR o.description ILIKE :search)', {
+      queryBuilder.where('o.displayName ILIKE :search', {
         search: `%${query.searchText}%`,
       });
     }
@@ -136,9 +136,9 @@ export class OccupationService {
       .createQueryBuilder('o')
       .leftJoinAndSelect('o.updatedBy', 'updatedBy');
 
-    // Search by name or description
+    // Search by name only
     if (query.searchText) {
-      queryBuilder.where('(o.displayName ILIKE :search OR o.description ILIKE :search)', {
+      queryBuilder.where('o.displayName ILIKE :search', {
         search: `%${query.searchText}%`,
       });
     }
