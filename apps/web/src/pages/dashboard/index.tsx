@@ -81,8 +81,8 @@ const Dashboard: NextPage = () => {
           ) : (
             <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
               <KPICard
-                title='Total Users'
-                value={overview?.general?.totalUsers ?? 0}
+                title='Active Users'
+                value={overview?.general?.activeUsers ?? 0}
                 subtitle='Tracking total number of users within the system.'
                 icon={<UsersIcon />}
               />

@@ -32,14 +32,17 @@ export class KpiService {
   }
 
   async getGeneralKPIs(healthAuthority?: string): Promise<GeneralKPIsRO> {
-    // Total Users (all users including revoked)
-    const totalUsersQuery = this.userRepo.createQueryBuilder('u');
+    // Active Users (logged in at least once, not revoked)
+    const activeUsersQuery = this.userRepo
+      .createQueryBuilder('u')
+      .where('u.keycloakId IS NOT NULL')
+      .andWhere('u.revokedAt IS NULL');
 
     if (healthAuthority) {
-      totalUsersQuery.where('u.organization = :healthAuthority', { healthAuthority });
+      activeUsersQuery.andWhere('u.organization = :healthAuthority', { healthAuthority });
     }
 
-    const totalUsers = await totalUsersQuery.getCount();
+    const activeUsers = await activeUsersQuery.getCount();
 
     // Pending Users (invited but not yet logged in)
     const pendingUsersQuery = this.userRepo
@@ -67,7 +70,7 @@ export class KpiService {
     const totalCarePlans = await carePlansQuery.getCount();
 
     return new GeneralKPIsRO({
-      totalUsers,
+      activeUsers,
       pendingUsers,
       totalCarePlans,
     });

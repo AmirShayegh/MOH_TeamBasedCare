@@ -21,7 +21,7 @@ export const ExportKPIButton: React.FC<ExportKPIButtonProps> = ({ data, isLoadin
       { header: 'Metric', key: 'metric', width: 30 },
       { header: 'Value', key: 'value', width: 15 },
     ];
-    generalSheet.addRow({ metric: 'Total Users', value: data.general.totalUsers });
+    generalSheet.addRow({ metric: 'Active Users', value: data.general.activeUsers });
     generalSheet.addRow({ metric: 'Pending Users (Invited)', value: data.general.pendingUsers });
     generalSheet.addRow({ metric: 'Total Care Plans', value: data.general.totalCarePlans });
     generalSheet.addRow({ metric: 'Export Date', value: new Date().toLocaleDateString() });

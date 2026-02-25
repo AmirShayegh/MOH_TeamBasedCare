@@ -3,7 +3,7 @@ import { Exclude, Expose } from 'class-transformer';
 @Exclude()
 export class GeneralKPIsRO {
   @Expose()
-  totalUsers!: number;
+  activeUsers!: number;
 
   @Expose()
   pendingUsers!: number;
