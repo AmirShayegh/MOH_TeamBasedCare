@@ -220,10 +220,9 @@ describe('OccupationService', () => {
         searchText: 'nurse',
       } as any);
 
-      expect(mockQueryBuilder.where).toHaveBeenCalledWith(
-        '(o.displayName ILIKE :search OR o.description ILIKE :search)',
-        { search: '%nurse%' },
-      );
+      expect(mockQueryBuilder.where).toHaveBeenCalledWith('o.displayName ILIKE :search', {
+        search: '%nurse%',
+      });
     });
 
     it('should default sort by displayName ASC when no sortBy', async () => {

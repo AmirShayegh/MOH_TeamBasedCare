@@ -55,8 +55,11 @@ export class PlanningSessionController {
   }
 
   @Post()
-  async createPlanningSession(@Body() saveProfileDto: SaveProfileDTO) {
-    const session = await this.planningSessionService.createPlanningSession(saveProfileDto);
+  async createPlanningSession(@Body() saveProfileDto: SaveProfileDTO, @Req() req: IRequest) {
+    const session = await this.planningSessionService.createPlanningSession(
+      saveProfileDto,
+      req.user,
+    );
 
     return new PlanningSessionRO(session);
   }
@@ -125,9 +128,9 @@ export class PlanningSessionController {
   }
 
   @UseGuards(SessionGuard)
-  @Patch('/:sessionId/export')
-  async markSessionExported(@Param('sessionId') sessionId: string) {
-    await this.planningSessionService.markSessionExported(sessionId);
+  @Patch('/:sessionId/publish')
+  async markSessionPublished(@Param('sessionId') sessionId: string) {
+    await this.planningSessionService.markSessionPublished(sessionId);
     return SUCCESS_RESPONSE;
   }
 

@@ -32,23 +32,29 @@ export class KpiService {
   }
 
   async getGeneralKPIs(healthAuthority?: string): Promise<GeneralKPIsRO> {
-    // Total Users (all users including revoked)
-    const totalUsersQuery = this.userRepo.createQueryBuilder('u');
-
-    if (healthAuthority) {
-      totalUsersQuery.where('u.organization = :healthAuthority', { healthAuthority });
-    }
-
-    const totalUsers = await totalUsersQuery.getCount();
-
-    // Active Users (all non-disabled)
-    const activeUsersQuery = this.userRepo.createQueryBuilder('u').where('u.revokedAt IS NULL');
+    // Active Users (logged in at least once, not revoked)
+    const activeUsersQuery = this.userRepo
+      .createQueryBuilder('u')
+      .where('u.keycloakId IS NOT NULL')
+      .andWhere('u.revokedAt IS NULL');
 
     if (healthAuthority) {
       activeUsersQuery.andWhere('u.organization = :healthAuthority', { healthAuthority });
     }
 
     const activeUsers = await activeUsersQuery.getCount();
+
+    // Pending Users (invited but not yet logged in)
+    const pendingUsersQuery = this.userRepo
+      .createQueryBuilder('u')
+      .where('u.keycloakId IS NULL')
+      .andWhere('u.revokedAt IS NULL');
+
+    if (healthAuthority) {
+      pendingUsersQuery.andWhere('u.organization = :healthAuthority', { healthAuthority });
+    }
+
+    const pendingUsers = await pendingUsersQuery.getCount();
 
     // Total Care Plans — when filtering by HA, count plans created by users in that HA
     const carePlansQuery = this.planningSessionRepo
@@ -64,8 +70,8 @@ export class KpiService {
     const totalCarePlans = await carePlansQuery.getCount();
 
     return new GeneralKPIsRO({
-      totalUsers,
       activeUsers,
+      pendingUsers,
       totalCarePlans,
     });
   }

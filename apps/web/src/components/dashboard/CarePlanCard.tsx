@@ -3,14 +3,12 @@ import { ClipboardIcon } from '../icons';
 export interface CarePlanCardProps {
   careSettingName: string;
   healthAuthority: string;
-  isMaster: boolean;
   count: number;
 }
 
 export const CarePlanCard: React.FC<CarePlanCardProps> = ({
   careSettingName,
   healthAuthority,
-  isMaster,
   count,
 }) => {
   return (
@@ -32,7 +30,7 @@ export const CarePlanCard: React.FC<CarePlanCardProps> = ({
       </div>
       {/* Health Authority */}
       <div className='text-xs font-bold text-bcBluePrimary leading-[18px]'>
-        {isMaster ? 'MASTER' : healthAuthority !== 'GLOBAL' ? healthAuthority.toUpperCase() : ''}
+        {healthAuthority !== 'GLOBAL' ? healthAuthority.toUpperCase() : ''}
       </div>
     </div>
   );

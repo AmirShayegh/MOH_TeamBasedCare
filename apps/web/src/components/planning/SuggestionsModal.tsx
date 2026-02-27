@@ -207,28 +207,10 @@ export const SuggestionsModal: React.FC<SuggestionsModalProps> = ({ isOpen, onCl
     }
 
     if (mergedSuggestions.length === 0) {
-      const uncovered = suggestions?.totalUncoveredActivities ?? 0;
-
-      if (uncovered === 0) {
-        // Success: All activities covered by selected team
-        return (
-          <div className='flex items-center justify-center py-12 text-gray-500'>
-            <FontAwesomeIcon icon={faCheck} className='mr-2 text-green-500 text-xl' />
-            All activities are covered by selected occupations
-          </div>
-        );
-      }
-
-      // Data gap: Uncovered activities but no occupation has permissions for them in this template
       return (
-        <div className='flex flex-col items-center justify-center py-12 text-gray-500'>
-          <div className='mb-2'>
-            {uncovered} {uncovered === 1 ? 'activity has' : 'activities have'} no occupation
-            permissions in this care setting
-          </div>
-          <div className='text-sm text-gray-400'>
-            Permissions can be updated in the care setting&apos;s edit page
-          </div>
+        <div className='flex items-center justify-center py-12 text-gray-500'>
+          <FontAwesomeIcon icon={faInfoCircle} className='mr-2 text-gray-400 text-xl' />
+          No more suggestions available
         </div>
       );
     }
